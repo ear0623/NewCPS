@@ -1,3 +1,27 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:1be39720b11f91b790122ac3edbad155d4f7ceca6ea1a3a8a7d6780b112e2318
-size 540
+{
+   "FileVersion": 3,
+   "EngineAssociation": "5.3",
+   "Category": "",
+   "Description": "",
+   "Modules": [
+      {
+         "Name": "Project_CPS",
+         "Type": "Runtime",
+         "LoadingPhase": "Default",
+         "AdditionalDependencies": [
+            "Engine",
+            "UMG",
+            "CoreUObject"
+         ]
+      }
+   ],
+   "Plugins": [
+      {
+         "Name": "ModelingToolsEditorMode",
+         "Enabled": true,
+         "TargetAllowList": [
+            "Editor"
+         ]
+      }
+   ]
+}

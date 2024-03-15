@@ -116,6 +116,25 @@ struct FJsonType01Struct
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	int32 type = 0;
+
+public:
+	int64 GetItemId() { return itemId; }
+	void SetItemId(int64 itemID) { itemId = itemID; }
+	//
+	FString GetItemName() { return dataName; }
+	void SetItemName(FString ItemName) { dataName = ItemName; }
+	//
+	int64 GetDataValue() { return dataValue; }
+	void SETDataValue(int64 DataValue) { dataValue = DataValue; }
+	//
+	int64 GetVcID() { return vcId; }
+	void SETVcID(int64 vcID) { vcId = vcID; }
+	//
+	FString GetVcName() { return vcName; }
+	void SetVcName(FString vcname) { vcName = vcname; }
+	//
+	int64 GetType() { return type; }
+	void SETType(int64 Type) { type = Type; }
 };
 
 USTRUCT(BlueprintType)
@@ -222,7 +241,7 @@ public:
 	UHTTPObject();
 
 	UFUNCTION(BlueprintCallable,Category = "HTTP", DisplayName = "HttpConnect")
-	void ExcuteHttp(FString SourceURL, FString Path_1, FString Path_2, FString Name);
+	void ExcuteHttp(FString SourceURL, FString Path_1, FString Path_2, FString Name, SettingAPI APIenum);
 
 	UPROPERTY(BlueprintAssignable)
 	FHttpConnectStartDelegate OnHttpConnectStartCallback;
