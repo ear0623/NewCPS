@@ -6,7 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "APController.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSetPostProcessOnOff);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetPostProcessOnOff,FName,name);
 
 class UInputMappingContext;
 class APlayerPawn;
@@ -54,6 +54,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool GetHit();
+
+	void SaveTag();
 
 private:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "InterpSpeed", meta = (AllowPrivateAccess = "true"))

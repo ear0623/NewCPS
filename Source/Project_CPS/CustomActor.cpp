@@ -35,19 +35,22 @@ void ACustomActor::Tick(float DeltaTime)
 
 }
 
-void ACustomActor::SetLineOnOff()
+void ACustomActor::SetLineOnOff(FName name)
 {
+	if (this->ActorHasTag(name))
+	{
+		if (TargetMesh->bRenderCustomDepth == true)
+		{
+			TargetMesh->SetRenderCustomDepth(false);
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, SourceFileTagName().ToString());
+		}
+		else
+		{
+			TargetMesh->SetRenderCustomDepth(true);
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("false")));
+		}
+	}
 	
-	if (TargetMesh->bRenderCustomDepth == true)
-	{
-		TargetMesh->SetRenderCustomDepth(false);
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("true")));
-	}
-	else
-	{
-		TargetMesh->SetRenderCustomDepth(true);
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("false")));
-	}
 	
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("SetLineOnOff %s"), TargetMesh->bRenderCustomDepth));
 }

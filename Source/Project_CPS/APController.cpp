@@ -116,25 +116,59 @@ bool AAPController::GetHit()
 {
 	FHitResult Hitresult;
 	bool ClickValue = this->GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, Hitresult);
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, Hitresult.GetActor()->GetClass()->GetName());
 	if (ClickValue)
 	{
-		FName Type="Type01";
-		if (Hitresult.GetActor()->ActorHasTag(Type))
+		if (Hitresult.GetActor()->ActorHasTag("Switch_Board"))
 		{
+			FName SaveTag = "Switch_Board";
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("True")));
+			Location = Hitresult.GetActor()->GetActorLocation();
+			FRotator Rotation = Hitresult.GetActor()->GetActorRotation();
+
+			if (Setpos.IsBound())
+			{
+				Setpos.Broadcast(SaveTag);
+			}
+
+			GetWorldTimerManager().SetTimer(TimerHandle, this, &AAPController::InitSetting_Player_Pos, 0.01f, true);
+		}
+		else if (Hitresult.GetActor()->ActorHasTag("Pipe"))
+		{
+			FName SaveTag = "Pipe";
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("True")));
 			Location = Hitresult.GetActor()->GetActorLocation();
 			FRotator Rotation = Hitresult.GetActor()->GetActorRotation();
 			
 			if (Setpos.IsBound())
 			{
-				Setpos.Broadcast();
+				Setpos.Broadcast(SaveTag);
+			}
+
+			GetWorldTimerManager().SetTimer(TimerHandle, this, &AAPController::InitSetting_Player_Pos, 0.01f, true);
+		}
+		else if (Hitresult.GetActor()->ActorHasTag("Puller"))
+		{
+			FName SaveTag = "Puller";
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("True")));
+			Location = Hitresult.GetActor()->GetActorLocation();
+			FRotator Rotation = Hitresult.GetActor()->GetActorRotation();
+
+			if (Setpos.IsBound())
+			{
+				Setpos.Broadcast(SaveTag);
 			}
 
 			GetWorldTimerManager().SetTimer(TimerHandle, this, &AAPController::InitSetting_Player_Pos, 0.01f, true);
 		}
 	}
-
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("ClickValuFail")));
 	return ClickValue;
+}
+
+void AAPController::SaveTag()
+{
+
 }
 
 
