@@ -130,6 +130,7 @@ void UHTTPObject::HttpRequsetFinishedDelegate(FHttpRequestPtr Request, FHttpResp
 				}
 			}
 		}
+		JSonCallBack.Broadcast(CallbackStruct);
 	}
 	else if(APIENum == SettingAPI::Type01)
 	{
@@ -149,21 +150,17 @@ void UHTTPObject::HttpRequsetFinishedDelegate(FHttpRequestPtr Request, FHttpResp
 			
 			}
 		}
-		
+		JSonCallBack_Type01.Broadcast(CallbackStruct);
 	}
 	
-
-
 	FString result; // 데이터를 저장할 변수
 	//int resultInt; // 데이터를 저장할 변수
-	TArray<TSharedPtr<FJsonValue>> ResultArray;
 
 	// CallbackStruct 세팅
 	// Add 방식 대신 대입 방식 사용 시, 해당 과정 넣어주어야 에러 나지 않음
 	// ㄴ 예시 : CallbackStruct.FruitArray.Apple = result;
 	// Add 방식 사용 시, 해당 과정 넣어주지 말 것
 	// ㄴ 예시 : CallbackStruct.FruitArray.Add();
-	JSonCallBack.Broadcast(CallbackStruct); 
 	
 }
 

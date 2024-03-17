@@ -151,6 +151,7 @@ struct FStructArray
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHttpConnectStartDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDele_JSonCallBack,FStructArray,Callbackstruct);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDele_JSonCallBack_Type01, FStructArray, Callbackstruct);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FHttpConnectProcessDelegate, int32, RecvSize, int32, TotalSize, float, Percent); 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHttpConnectFinishedDelegate, bool, bIsSuccess, FString, ContentPath);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FDeleGetHTTPData, int64, Id, FString, DataName, int64, DataValue, int64, VCID, FString, VCName, int64, Type);
@@ -255,6 +256,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FDele_JSonCallBack JSonCallBack;
 
+	UPROPERTY(BlueprintAssignable)
+	FDele_JSonCallBack JSonCallBack_Type01;
+
 	UFUNCTION(BlueprintCallable)
 	void MyHttpCall();
 
@@ -294,6 +298,7 @@ private:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = " Struct", meta = (AllowPrivateAccess = "true"))
 	FStructArray StructArray_Json;
+
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Widget", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UUSideSecondWidget> ListWidgetPtr;
