@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "CustomActor.generated.h"
 
+class USkeletalMeshComponent;
+
 UCLASS()
 class PROJECT_CPS_API ACustomActor : public AActor
 {
@@ -29,5 +31,8 @@ public:
 private:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Component", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> TargetMesh;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Component", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> TargetSkeletalMesh;
 
 };

@@ -55,6 +55,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool GetHit();
 
+	UFUNCTION(BlueprintCallable)
+	bool GetClickBTC();
+
 	void SaveTag();
 
 private:

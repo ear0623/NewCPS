@@ -130,7 +130,6 @@ bool AAPController::GetHit()
 			{
 				Setpos.Broadcast(SaveTag);
 			}
-
 			GetWorldTimerManager().SetTimer(TimerHandle, this, &AAPController::InitSetting_Player_Pos, 0.01f, true);
 		}
 		else if (Hitresult.GetActor()->ActorHasTag("Pipe"))
@@ -164,6 +163,11 @@ bool AAPController::GetHit()
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("ClickValuFail")));
 	return ClickValue;
+}
+
+bool AAPController::GetClickBTC()
+{
+	return false;
 }
 
 void AAPController::SaveTag()

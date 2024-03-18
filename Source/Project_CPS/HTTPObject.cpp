@@ -321,13 +321,14 @@ void UHTTPObject::ParseParent_Type01(const TSharedPtr<FJsonObject>& JsonObject, 
 	if (JsonObject->TryGetNumberField(TEXT("itemId"), resultInt))
 		Parents.itemId = resultInt;
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("%i"), Parents.itemId));
-	//Parents.itemId = JsonObject->GetIntegerField("itemId");
 	
 	if (JsonObject->TryGetStringField(TEXT("dataName"), result))
 		Parents.dataName = result;
 
 	if (JsonObject->TryGetNumberField(TEXT("dataValue"), resultInt))
 		Parents.dataValue = resultInt;
+
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("%i"), Parents.dataValue));
 
 	if (JsonObject->TryGetStringField(TEXT("vcName"), result))
 		Parents.vcName = result;

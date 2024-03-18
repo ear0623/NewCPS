@@ -14,6 +14,8 @@ ACustomActor::ACustomActor()
 	TargetMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Targetmesh"));
 	TargetMesh->SetupAttachment(RootComponent);
 
+	TargetSkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Skeletalmesh"));
+	TargetSkeletalMesh->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -37,11 +39,12 @@ void ACustomActor::Tick(float DeltaTime)
 
 void ACustomActor::SetLineOnOff(FName name)
 {
-	if (this->ActorHasTag(name))
+	if (this->ActorHasTag(name)&& TargetMesh != nullptr)
 	{
 		if (TargetMesh->bRenderCustomDepth == true)
 		{
 			TargetMesh->SetRenderCustomDepth(false);
+
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, SourceFileTagName().ToString());
 		}
 		else
@@ -50,8 +53,31 @@ void ACustomActor::SetLineOnOff(FName name)
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("false")));
 		}
 	}
-	
-	
+	else if (this->ActorHasTag(name)&& TargetSkeletalMesh != nullptr)
+	{
+		if (TargetSkeletalMesh->bRenderCustomDepth == true)
+		{
+			TargetSkeletalMesh->SetRenderCustomDepth(false);
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, SourceFileTagName().ToString());
+		}
+		else
+		{
+			TargetSkeletalMesh->SetRenderCustomDepth(true);
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("false")));
+		}
+	}
+	else if(!this->ActorHasTag(name))
+	{
+		if (TargetMesh->bRenderCustomDepth == true&& TargetMesh != nullptr)
+		{
+			TargetMesh->SetRenderCustomDepth(false);
+			
+		}
+		/*if (TargetSkeletalMesh->bRenderCustomDepth == true&& TargetSkeletalMesh !=nullptr)
+		{
+			TargetSkeletalMesh->SetRenderCustomDepth(false);
+		}*/
+	}
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("SetLineOnOff %s"), TargetMesh->bRenderCustomDepth));
 }
 
