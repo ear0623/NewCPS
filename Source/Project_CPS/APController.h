@@ -56,9 +56,10 @@ public:
 	bool GetHit();
 
 	UFUNCTION(BlueprintCallable)
-	bool GetClickBTC();
+	void GetClickBTC(UClass* InputClass);
 
-	void SaveTag();
+	UFUNCTION(BlueprintCallable)
+	void SaveTag(FText name);
 
 private:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "InterpSpeed", meta = (AllowPrivateAccess = "true"))

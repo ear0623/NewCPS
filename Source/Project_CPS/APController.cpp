@@ -10,6 +10,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "CustomActor.h"
 #include "HTTPObject.h"
+#include "Kismet/GameplayStatics.h"
 
 AAPController::AAPController()
 {
@@ -160,19 +161,77 @@ bool AAPController::GetHit()
 
 			GetWorldTimerManager().SetTimer(TimerHandle, this, &AAPController::InitSetting_Player_Pos, 0.01f, true);
 		}
+		else if (Hitresult.GetActor()->ActorHasTag("Billet_Part_1"))
+		{
+			FName SaveTag = "Billet_Part_1";
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("True")));
+			Location = Hitresult.GetActor()->GetActorLocation();
+			FRotator Rotation = Hitresult.GetActor()->GetActorRotation();
+
+			if (Setpos.IsBound())
+			{
+				Setpos.Broadcast(SaveTag);
+			}
+
+			GetWorldTimerManager().SetTimer(TimerHandle, this, &AAPController::InitSetting_Player_Pos, 0.01f, true);
+		}
+		
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("ClickValuFail")));
 	return ClickValue;
 }
 
-bool AAPController::GetClickBTC()
+void AAPController::GetClickBTC(UClass* InputClass)
 {
-	return false;
+	InputClass ;
+	return ;
 }
 
-void AAPController::SaveTag()
+void AAPController::SaveTag(FText name)
 {
-
+	
+	if (!name.IsEmpty())
+	{
+		FString ConvertString = name.ToString();
+		FName ConvertName = FName(*ConvertString);
+		bool SetValue=false;
+		TArray<AActor*> FoundActors;
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, ConvertString);
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACustomActor::StaticClass(), FoundActors); 
+		for (const auto& Array : FoundActors)
+		{
+			ACustomActor* TempActor = Cast<ACustomActor>(Array);
+			if (TempActor)
+			{
+				
+				if (ConvertString == TempActor->GetIDName())
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, Array->GetFName().ToString());
+					GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, TempActor->GetIDName());						
+					if (Setpos.IsBound())
+					{
+						Setpos.Broadcast(ConvertName);
+						GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, FString::Printf(TEXT("BroadCast")));
+						GetWorldTimerManager().SetTimer(TimerHandle, this, &AAPController::InitSetting_Player_Pos, 0.01f, true);
+					}
+				/*	if (Array->ActorHasTag("Puller"))
+					{
+						FName SaveTag = "Puller";
+						if (Setpos.IsBound())
+						{
+							Setpos.Broadcast(SaveTag);
+							GetWorldTimerManager().SetTimer(TimerHandle, this, &AAPController::InitSetting_Player_Pos, 0.01f, true);
+						}
+						break;
+					}*/
+				}
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue,FString::Printf(TEXT("Fail")));
+			}
+		}
+	}
 }
 
 

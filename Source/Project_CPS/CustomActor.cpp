@@ -4,18 +4,23 @@
 #include "CustomActor.h"
 #include "APController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/SceneComponent.h"
 
 // Sets default values
 ACustomActor::ACustomActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	SCene = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	SCene->SetupAttachment(RootComponent);
 
 	TargetMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Targetmesh"));
-	TargetMesh->SetupAttachment(RootComponent);
+	TargetMesh->SetupAttachment(SCene);
 
 	TargetSkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Skeletalmesh"));
-	TargetSkeletalMesh->SetupAttachment(RootComponent);
+	TargetSkeletalMesh->SetupAttachment(SCene);
+
+
 }
 
 // Called when the game starts or when spawned
@@ -39,13 +44,14 @@ void ACustomActor::Tick(float DeltaTime)
 
 void ACustomActor::SetLineOnOff(FName name)
 {
+
 	if (this->ActorHasTag(name)&& TargetMesh != nullptr)
 	{
 		if (TargetMesh->bRenderCustomDepth == true)
 		{
 			TargetMesh->SetRenderCustomDepth(false);
 
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, SourceFileTagName().ToString());
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("asd")));
 		}
 		else
 		{
@@ -58,7 +64,6 @@ void ACustomActor::SetLineOnOff(FName name)
 		if (TargetSkeletalMesh->bRenderCustomDepth == true)
 		{
 			TargetSkeletalMesh->SetRenderCustomDepth(false);
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, SourceFileTagName().ToString());
 		}
 		else
 		{

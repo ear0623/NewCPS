@@ -257,7 +257,7 @@ public:
 	FDele_JSonCallBack JSonCallBack;
 
 	UPROPERTY(BlueprintAssignable)
-	FDele_JSonCallBack JSonCallBack_Type01;
+	FDele_JSonCallBack_Type01 JSonCallBack_Type01;
 
 	UFUNCTION(BlueprintCallable)
 	void MyHttpCall();

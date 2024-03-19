@@ -35,4 +35,21 @@ private:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Component", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> TargetSkeletalMesh;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Component", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USceneComponent> SCene;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data", meta = (AllowPrivateAccess = "true"))
+	int64 ID;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data", meta = (AllowPrivateAccess = "true"))
+	TArray<FText> Name_Array;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data", meta = (AllowPrivateAccess = "true"))
+	FString IDName;
+
+public:
+	int64 getID() {	return ID;}
+	TArray<FText> GetNameArray() { return Name_Array; }
+	FString GetIDName() { return IDName; }
+
 };

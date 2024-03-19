@@ -28,7 +28,7 @@ void UHTTPObject::ExcuteHttp(FString Get_SourceURL, FString Path_1, FString Path
 	this->Path3 = Path_2;
 	this->Name = Get_Name;
 	FString URL;
-	URL = SourceURL+Path2+Path3+Name;
+	URL = Get_SourceURL + Path_1 + Path_2 + Get_Name;
 	//
 	if (Path == SourceURL)
 	{
@@ -43,10 +43,11 @@ void UHTTPObject::ExcuteHttp(FString Get_SourceURL, FString Path_1, FString Path
 	//GEngine->AddOnScreenDebugMessage(-1,15.0f,FColor::Red ,URL);
 	//
 	TSharedPtr<IHttpRequest> HttpRequest = HttpModule->CreateRequest();
-	HttpRequest->SetVerb("GET");
-	HttpRequest->SetURL(URL);
 	HttpRequest->OnRequestProgress().BindUObject(this, &UHTTPObject::HttpRequestProgressDelegate);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UHTTPObject::HttpRequsetFinishedDelegate);
+
+	HttpRequest->SetURL(URL);
+	HttpRequest->SetVerb("GET");
 	HttpRequest->ProcessRequest();
 }
 
@@ -80,8 +81,7 @@ void UHTTPObject::HttpRequsetFinishedDelegate(FHttpRequestPtr Request, FHttpResp
 		return;
 
 	// 서버에서 받은 json을 언리얼에서 사용 가능한 json으로 변경
-	FString ContentString = Response->GetContentAsString();
-	TSharedRef<TJsonReader<TCHAR>> Reader = TJsonReaderFactory<TCHAR>::Create(ContentString);
+	TSharedRef<TJsonReader<TCHAR>> Reader = TJsonReaderFactory<TCHAR>::Create(Response->GetContentAsString());
 	TArray<TSharedPtr<FJsonValue>> JsonArray;
 
 	TSharedRef<TJsonReader<>> ObjectReader = TJsonReaderFactory<>::Create(Response->GetContentAsString());
@@ -90,7 +90,11 @@ void UHTTPObject::HttpRequsetFinishedDelegate(FHttpRequestPtr Request, FHttpResp
 	if (APIENum == SettingAPI::Type01)
 	{
 		if (!FJsonSerializer::Deserialize(ObjectReader, JsonObjectCheck))
+		{
+			//pass
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("nosdf")));
 			return;
+		}
 	}
 	
 	
@@ -103,6 +107,28 @@ void UHTTPObject::HttpRequsetFinishedDelegate(FHttpRequestPtr Request, FHttpResp
 	// json 파싱
 	FStructArray CallbackStruct; // 데이터를 저장할 변수
 	TArray<TSharedPtr<FJsonValue>> TempArray;
+	if (APIENum == SettingAPI::Type01)
+	{
+		if (FJsonSerializer::Deserialize(ObjectReader, JsonObjectCheck))
+		{
+			//if (!JsonObjectCheck.IsValid()) // (JsonArray > 0)
+			TempArray = JsonObjectCheck->GetArrayField(TEXT("data"));
+
+
+			// JsonArray 접근
+			for (int i = 0; i < TempArray.Num(); i++)
+			{
+				// jsonValue to jsonObject
+				if (JsonObjectCheck.IsValid())
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Valid")));
+					ParseParent_Type01(JsonObjectCheck, CallbackStruct);
+
+				}
+			}
+		}
+		JSonCallBack_Type01.Broadcast(CallbackStruct);
+	}
 
 	if (APIENum == SettingAPI::None)
 	{
@@ -132,26 +158,7 @@ void UHTTPObject::HttpRequsetFinishedDelegate(FHttpRequestPtr Request, FHttpResp
 		}
 		JSonCallBack.Broadcast(CallbackStruct);
 	}
-	else if(APIENum == SettingAPI::Type01)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Emerald, FString::Printf(TEXT("Enum :: Type01")));
 
-		//if (!JsonObjectCheck.IsValid()) // (JsonArray > 0)
-		TempArray = JsonObjectCheck->GetArrayField(TEXT("data"));
-
-	
-		// JsonArray 접근
-		for (int i = 0; i < TempArray.Num(); i++)
-		{
-			// jsonValue to jsonObject
-			if (JsonObjectCheck.IsValid())
-			{
-				ParseParent_Type01(JsonObjectCheck, CallbackStruct); 
-			
-			}
-		}
-		JSonCallBack_Type01.Broadcast(CallbackStruct);
-	}
 	
 	FString result; // 데이터를 저장할 변수
 	//int resultInt; // 데이터를 저장할 변수
@@ -163,8 +170,6 @@ void UHTTPObject::HttpRequsetFinishedDelegate(FHttpRequestPtr Request, FHttpResp
 	// ㄴ 예시 : CallbackStruct.FruitArray.Add();
 	
 }
-
-
 
 void UHTTPObject::Tempsave()
 {
@@ -178,7 +183,6 @@ void UHTTPObject::Tempsave()
 	
 	
 }
-
 
 void UHTTPObject::ParseParent(const TSharedPtr<FJsonObject>& JsonObject, FStructArray& CallbackStruct)
 {
@@ -320,7 +324,7 @@ void UHTTPObject::ParseParent_Type01(const TSharedPtr<FJsonObject>& JsonObject, 
 
 	if (JsonObject->TryGetNumberField(TEXT("itemId"), resultInt))
 		Parents.itemId = resultInt;
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("%i"), Parents.itemId));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("%i"), Parents.itemId));
 	
 	if (JsonObject->TryGetStringField(TEXT("dataName"), result))
 		Parents.dataName = result;
@@ -328,7 +332,7 @@ void UHTTPObject::ParseParent_Type01(const TSharedPtr<FJsonObject>& JsonObject, 
 	if (JsonObject->TryGetNumberField(TEXT("dataValue"), resultInt))
 		Parents.dataValue = resultInt;
 
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("%i"), Parents.dataValue));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("%i"), Parents.dataValue));
 
 	if (JsonObject->TryGetStringField(TEXT("vcName"), result))
 		Parents.vcName = result;
@@ -341,6 +345,6 @@ void UHTTPObject::ParseParent_Type01(const TSharedPtr<FJsonObject>& JsonObject, 
 
 	
 	CallbackStruct.JsonData_Type01.Add(Parents);
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("FInished")));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("FInished")));
 }
 
