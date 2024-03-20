@@ -80,20 +80,38 @@ void AAPController::InitSetting_Camera()
 
 void AAPController::InitSetting_Player_Pos()
 {
-	InterSpeed = 0.1f;
+	InterSpeed = 1.0f;
 	float DeltaTime = FApp::GetDeltaTime(); 
 	FVector CurrentVector = MyPlayer->GetActorLocation();
 	FVector TargetVector = Location;
 	FVector InterpVector = FMath::VInterpTo(CurrentVector, TargetVector, DeltaTime, InterSpeed);
+	//rotation setting
+	FRotator CurrentRotator = MyPlayer->GetActorRotation();
+	FRotator TargetRotator = Rotation;
+	FRotator InterpRotator = FMath::RInterpTo(CurrentRotator, TargetRotator, DeltaTime, InterSpeed);
+	//test
+
+	////loop
 	MyPlayer->SetActorLocation(InterpVector);
 	//
 	InterSpeed += 0.1f;
 	//
-	if (FMath::IsNearlyEqual(CurrentVector.X, TargetVector.X, 1.0f)&&FMath::IsNearlyEqual(CurrentVector.Y, TargetVector.Y, 1.0f)&&FMath::IsNearlyEqual(CurrentVector.Z, TargetVector.Z, 100.0f))
+	if (FMath::IsNearlyEqual(CurrentVector.X, TargetVector.X, 1.0f)&&FMath::IsNearlyEqual(CurrentVector.Y, TargetVector.Y, 1.0f)&&FMath::IsNearlyEqual(CurrentVector.Z, TargetVector.Z, 1.0f))
 	{
-		MyPlayer->SetActorLocation(TargetVector);
+		InterSpeed = 1.0f;
+		//MyPlayer->SetActorLocation(TargetVector);
 		GetWorldTimerManager().ClearTimer(TimerHandle);
 	}
+	//rotation
+	
+	MyPlayer->SetActorRotation(InterpRotator);
+
+	if (FMath::IsNearlyEqual(CurrentRotator.Pitch, TargetRotator.Pitch, 1.0f) && FMath::IsNearlyEqual(CurrentRotator.Yaw, TargetRotator.Yaw, 1.0f) && FMath::IsNearlyEqual(CurrentRotator.Roll, TargetRotator.Roll, 100.0f))
+	{
+		MyPlayer->SetActorRotation(TargetRotator);
+		
+	}
+	
 }
 
 void AAPController::InitSetting_SprinArm()
@@ -125,7 +143,7 @@ bool AAPController::GetHit()
 			FName SaveTag = "Switch_Board";
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("True")));
 			Location = Hitresult.GetActor()->GetActorLocation();
-			FRotator Rotation = Hitresult.GetActor()->GetActorRotation();
+			Rotation = Hitresult.GetActor()->GetActorRotation();
 
 			if (Setpos.IsBound())
 			{
@@ -138,7 +156,7 @@ bool AAPController::GetHit()
 			FName SaveTag = "Pipe";
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("True")));
 			Location = Hitresult.GetActor()->GetActorLocation();
-			FRotator Rotation = Hitresult.GetActor()->GetActorRotation();
+			Rotation = Hitresult.GetActor()->GetActorRotation();
 			
 			if (Setpos.IsBound())
 			{
@@ -152,7 +170,7 @@ bool AAPController::GetHit()
 			FName SaveTag = "Puller";
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("True")));
 			Location = Hitresult.GetActor()->GetActorLocation();
-			FRotator Rotation = Hitresult.GetActor()->GetActorRotation();
+			Rotation = Hitresult.GetActor()->GetActorRotation();
 
 			if (Setpos.IsBound())
 			{
@@ -166,7 +184,7 @@ bool AAPController::GetHit()
 			FName SaveTag = "Billet_Part_1";
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("True")));
 			Location = Hitresult.GetActor()->GetActorLocation();
-			FRotator Rotation = Hitresult.GetActor()->GetActorRotation();
+			Rotation = Hitresult.GetActor()->GetActorRotation();
 
 			if (Setpos.IsBound())
 			{
@@ -189,7 +207,6 @@ void AAPController::GetClickBTC(UClass* InputClass)
 
 void AAPController::SaveTag(FText name)
 {
-	
 	if (!name.IsEmpty())
 	{
 		FString ConvertString = name.ToString();
@@ -203,34 +220,62 @@ void AAPController::SaveTag(FText name)
 			ACustomActor* TempActor = Cast<ACustomActor>(Array);
 			if (TempActor)
 			{
-				
 				if (ConvertString == TempActor->GetIDName())
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, Array->GetFName().ToString());
-					GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, TempActor->GetIDName());						
+				{				
 					if (Setpos.IsBound())
 					{
 						Setpos.Broadcast(ConvertName);
-						GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, FString::Printf(TEXT("BroadCast")));
+						Location = TempActor->GetTargetMesh()->GetRelativeLocation()+FVector(0.0f,0.0f,20.0f);
+						Rotation = TempActor->GetTargetMesh()->GetRelativeRotation();
 						GetWorldTimerManager().SetTimer(TimerHandle, this, &AAPController::InitSetting_Player_Pos, 0.01f, true);
-					}
-				/*	if (Array->ActorHasTag("Puller"))
-					{
-						FName SaveTag = "Puller";
-						if (Setpos.IsBound())
-						{
-							Setpos.Broadcast(SaveTag);
-							GetWorldTimerManager().SetTimer(TimerHandle, this, &AAPController::InitSetting_Player_Pos, 0.01f, true);
-						}
 						break;
-					}*/
+					}
 				}
 			}
-			else
+		}
+	}
+}
+
+void AAPController::SaveId(int64 Id)
+{
+	if (CheckNumber(Id))
+	{
+		TArray<AActor*> FoundActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACustomActor::StaticClass(), FoundActors);
+		for (const auto& Array : FoundActors)
+		{
+			ACustomActor* TempActor = Cast<ACustomActor>(Array);
+			if (TempActor)
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue,FString::Printf(TEXT("Fail")));
+				if (Id == TempActor->getID())
+				{
+					if (Setpos_i.IsBound())
+					{
+						Setpos_i.Broadcast(Id);
+						Location = TempActor->GetTargetMesh()->GetRelativeLocation() + FVector(0.0f, 0.0f, 20.0f);
+						Rotation = TempActor->GetTargetMesh()->GetRelativeRotation();
+						GetWorldTimerManager().SetTimer(TimerHandle, this, &AAPController::InitSetting_Player_Pos, 0.01f, true);
+						break;
+					}
+				}
 			}
 		}
+	}
+}
+
+bool AAPController::CheckNumber(int64 Number)
+{
+	if (Number == 0)
+	{
+		return false;
+	}
+	else if (Number != 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 

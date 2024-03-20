@@ -28,6 +28,9 @@ public:
 	UFUNCTION()
 	void SetLineOnOff(FName name);
 
+	UFUNCTION()
+	void SetLineOnOff_Innumber(int64 Id);
+
 private:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Component", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> TargetMesh;
@@ -51,5 +54,6 @@ public:
 	int64 getID() {	return ID;}
 	TArray<FText> GetNameArray() { return Name_Array; }
 	FString GetIDName() { return IDName; }
-
+	TObjectPtr<UStaticMeshComponent> GetTargetMesh() { return TargetMesh; }
+	TObjectPtr<USkeletalMeshComponent> GetSkeletalMesh() { return TargetSkeletalMesh; }
 };

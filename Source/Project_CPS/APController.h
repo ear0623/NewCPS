@@ -7,6 +7,7 @@
 #include "APController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetPostProcessOnOff,FName,name);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetPostProcessOnOff_InNumber, int64, ID);
 
 class UInputMappingContext;
 class APlayerPawn;
@@ -34,12 +35,14 @@ private:
 	TObjectPtr<APlayerPawn>MyPlayer;
 
 	FVector Location;
+	FRotator Rotation;
 
 	FTimerHandle TimerHandle;
 	FTimerHandle TimerHandle_Arm;
 
 public:
 	FSetPostProcessOnOff Setpos;
+	FSetPostProcessOnOff_InNumber Setpos_i;
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -60,6 +63,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SaveTag(FText name);
+
+	UFUNCTION(BlueprintCallable)
+	void SaveId(int64 Id);
+
+	bool CheckNumber(int64 Number);
 
 private:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "InterpSpeed", meta = (AllowPrivateAccess = "true"))

@@ -271,6 +271,7 @@ private:
 
 	void HttpRequsetFinishedDelegate(FHttpRequestPtr Request, FHttpResponsePtr Respones, bool bWasSuccessful);
 
+	
 private:
 	UPROPERTY()
 	FString SourceURL;

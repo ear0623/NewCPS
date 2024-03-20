@@ -45,12 +45,11 @@ void ACustomActor::Tick(float DeltaTime)
 void ACustomActor::SetLineOnOff(FName name)
 {
 
-	if (this->ActorHasTag(name)&& TargetMesh != nullptr)
+	if (this->IDName == name && TargetMesh != nullptr)
 	{
 		if (TargetMesh->bRenderCustomDepth == true)
 		{
 			TargetMesh->SetRenderCustomDepth(false);
-
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("asd")));
 		}
 		else
@@ -59,7 +58,7 @@ void ACustomActor::SetLineOnOff(FName name)
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("false")));
 		}
 	}
-	else if (this->ActorHasTag(name)&& TargetSkeletalMesh != nullptr)
+	else if (this->IDName == name && TargetSkeletalMesh != nullptr)
 	{
 		if (TargetSkeletalMesh->bRenderCustomDepth == true)
 		{
@@ -71,18 +70,39 @@ void ACustomActor::SetLineOnOff(FName name)
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("false")));
 		}
 	}
-	else if(!this->ActorHasTag(name))
+	else if(this->IDName != name)
 	{
 		if (TargetMesh->bRenderCustomDepth == true&& TargetMesh != nullptr)
 		{
 			TargetMesh->SetRenderCustomDepth(false);
 			
 		}
-		/*if (TargetSkeletalMesh->bRenderCustomDepth == true&& TargetSkeletalMesh !=nullptr)
-		{
-			TargetSkeletalMesh->SetRenderCustomDepth(false);
-		}*/
 	}
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("SetLineOnOff %s"), TargetMesh->bRenderCustomDepth));
+}
+
+void ACustomActor::SetLineOnOff_Innumber(int64 Id)
+{
+	if (this->ID == Id && TargetMesh != nullptr)
+	{
+		if (TargetMesh->bRenderCustomDepth == true)
+		{
+			TargetMesh->SetRenderCustomDepth(false);
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("asd")));
+		}
+		else
+		{
+			TargetMesh->SetRenderCustomDepth(true);
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("false")));
+		}
+	}
+	else if(this->ID != Id)
+	{
+		if (TargetMesh->bRenderCustomDepth == true && TargetMesh != nullptr)
+		{
+			TargetMesh->SetRenderCustomDepth(false);
+
+		}
+	}
 }
 
