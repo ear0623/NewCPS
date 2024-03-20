@@ -106,3 +106,28 @@ void ACustomActor::SetLineOnOff_Innumber(int64 Id)
 	}
 }
 
+void ACustomActor::SetLineOnOff_Child(int64 Id)
+{
+	if (this->ID == Id && TargetMesh != nullptr)
+	{
+		if (TargetMesh->bRenderCustomDepth == true)
+		{
+			TargetMesh->SetRenderCustomDepth(false);
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("asd")));
+		}
+		else
+		{
+			TargetMesh->SetRenderCustomDepth(true);
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("false")));
+		}
+	}
+	else if (this->ID != Id)
+	{
+		if (TargetMesh->bRenderCustomDepth == true && TargetMesh != nullptr)
+		{
+			TargetMesh->SetRenderCustomDepth(false);
+
+		}
+	}
+}
+

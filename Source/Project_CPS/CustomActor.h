@@ -31,6 +31,9 @@ public:
 	UFUNCTION()
 	void SetLineOnOff_Innumber(int64 Id);
 
+	UFUNCTION()
+	void SetLineOnOff_Child(int64 Id);
+
 private:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Component", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> TargetMesh;
@@ -43,6 +46,9 @@ private:
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data", meta = (AllowPrivateAccess = "true"))
 	int64 ID;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data", meta = (AllowPrivateAccess = "true"))
+	int64 ParentID;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Data", meta = (AllowPrivateAccess = "true"))
 	TArray<FText> Name_Array;

@@ -263,6 +263,29 @@ void AAPController::SaveId(int64 Id)
 	}
 }
 
+void AAPController::CompareIdAndParentID(int64 ParentId)
+{
+	if (CheckNumber(ParentId))
+	{
+		TArray<AActor*> FoundActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACustomActor::StaticClass(), FoundActors);
+		for (const auto& Array : FoundActors)
+		{
+			ACustomActor* TempActor = Cast<ACustomActor>(Array);
+			if (TempActor)
+			{
+				if (ParentId == TempActor->getID())
+				{
+					if (Setpos_i.IsBound())
+					{
+						Setpos_i.Broadcast(ParentId);
+					}
+				}
+			}
+		}
+	}
+}
+
 bool AAPController::CheckNumber(int64 Number)
 {
 	if (Number == 0)

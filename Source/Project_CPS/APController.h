@@ -8,6 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetPostProcessOnOff,FName,name);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetPostProcessOnOff_InNumber, int64, ID);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetPostProcessOnOff_InParent, int64, ParentID);
 
 class UInputMappingContext;
 class APlayerPawn;
@@ -43,6 +44,7 @@ private:
 public:
 	FSetPostProcessOnOff Setpos;
 	FSetPostProcessOnOff_InNumber Setpos_i;
+	FSetPostProcessOnOff_InParent Setpos_P;
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -66,6 +68,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SaveId(int64 Id);
+
+	UFUNCTION(BlueprintCallable)
+	void CompareIdAndParentID(int64 ParentId);
 
 	bool CheckNumber(int64 Number);
 
