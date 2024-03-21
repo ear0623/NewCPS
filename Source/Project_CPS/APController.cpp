@@ -28,11 +28,6 @@ void AAPController::BeginPlay()
 		LocalPlayersubSystem->AddMappingContext(MappingContext, 0);
 	}
 	MyPlayer = Cast<APlayerPawn>(this->GetPawn());
-
-	//UHTTPObject* UhttObject = NewObject<UHTTPObject>();
-	//if(uhttp)
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Emerald, FString::Printf(TEXT("Here is APCController BeginPlay")));
 }
 
 void AAPController::InitSetting()
@@ -50,8 +45,8 @@ void AAPController::InitSetting_Camera()
 	FRotator CurrentRotator = MyPlayer->GetSpringArm()->GetRelativeRotation();
 	FRotator CurrentRotator_Sub = MyPlayer->GetSubSpringArm()->GetRelativeRotation();
 	//
-	FRotator ObjectRotator = { 0.0f, 10.0f, 0.0f };
-	FRotator ObjectRotator_Sub = { -50.0f, 10.0f, 0.0f };
+	FRotator ObjectRotator = { 0.0f, 0.0f, 0.0f };
+	FRotator ObjectRotator_Sub = { 0.0f, 0.0f, -50.0f };
 	//
 	FRotator TargetRotator = ObjectRotator;
 	FRotator TargetRotator_Sub = ObjectRotator_Sub;
@@ -59,8 +54,8 @@ void AAPController::InitSetting_Camera()
 	FRotator InterpRotation = FMath::RInterpTo(CurrentRotator, TargetRotator, DeltaTime, InterSpeed);
 	FRotator InterpRotation_Sub = FMath::RInterpTo(CurrentRotator_Sub, TargetRotator_Sub, DeltaTime, InterSpeed);
 	//
-	MyPlayer->GetSpringArm()->SetWorldRotation(InterpRotation);
-	MyPlayer->GetSubSpringArm()->SetWorldRotation(InterpRotation_Sub);
+	MyPlayer->GetSpringArm()->SetRelativeRotation(InterpRotation);
+	MyPlayer->GetSubSpringArm()->SetRelativeRotation(InterpRotation_Sub);
 	//
 	float InterSpeed_Arm = 1.0f;
 	float Currentfloat = MyPlayer->GetSpringArm()->TargetArmLength;
@@ -70,8 +65,11 @@ void AAPController::InitSetting_Camera()
 
 	if (FMath::IsNearlyEqual(InterpRotation.Yaw, TargetRotator.Yaw, 1.0f)&& Currentfloat == 300)
 	{
-		MyPlayer->GetSpringArm()->SetWorldRotation(FRotator(0.0f, 10.0f, 0.0f));
-		MyPlayer->GetSubSpringArm()->SetWorldRotation(FRotator(0.0f, 10.0f, 0.0f));
+		InterSpeed = 1.0;
+		MyPlayer->GetSpringArm()->SetRelativeRotation(FRotator(0.0f, 00.0f, 0.0f));
+		MyPlayer->GetSubSpringArm()->SetRelativeRotation(FRotator(-50.0f, 0.0f, 0.0f));
+		//
+		
 		//
 		MyPlayer->GetSpringArm()->TargetArmLength = 300.0f;
 		GetWorldTimerManager().ClearTimer(TimerHandle);
@@ -80,7 +78,7 @@ void AAPController::InitSetting_Camera()
 
 void AAPController::InitSetting_Player_Pos()
 {
-	InterSpeed = 1.0f;
+	InterSpeed = 0.8f;
 	float DeltaTime = FApp::GetDeltaTime(); 
 	FVector CurrentVector = MyPlayer->GetActorLocation();
 	FVector TargetVector = Location;
@@ -94,8 +92,6 @@ void AAPController::InitSetting_Player_Pos()
 	////loop
 	MyPlayer->SetActorLocation(InterpVector);
 	//
-	InterSpeed += 0.1f;
-	//
 	if (FMath::IsNearlyEqual(CurrentVector.X, TargetVector.X, 1.0f)&&FMath::IsNearlyEqual(CurrentVector.Y, TargetVector.Y, 1.0f)&&FMath::IsNearlyEqual(CurrentVector.Z, TargetVector.Z, 1.0f))
 	{
 		InterSpeed = 1.0f;
@@ -106,8 +102,9 @@ void AAPController::InitSetting_Player_Pos()
 	
 	MyPlayer->SetActorRotation(InterpRotator);
 
-	if (FMath::IsNearlyEqual(CurrentRotator.Pitch, TargetRotator.Pitch, 1.0f) && FMath::IsNearlyEqual(CurrentRotator.Yaw, TargetRotator.Yaw, 1.0f) && FMath::IsNearlyEqual(CurrentRotator.Roll, TargetRotator.Roll, 100.0f))
+	if (FMath::IsNearlyEqual(CurrentRotator.Pitch, TargetRotator.Pitch, 1.0f) && FMath::IsNearlyEqual(CurrentRotator.Yaw, TargetRotator.Yaw, 1.0f) && FMath::IsNearlyEqual(CurrentRotator.Roll, TargetRotator.Roll, 10.0f))
 	{
+		InterSpeed = 1.0f;
 		MyPlayer->SetActorRotation(TargetRotator);
 		
 	}
@@ -135,7 +132,6 @@ bool AAPController::GetHit()
 {
 	FHitResult Hitresult;
 	bool ClickValue = this->GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, Hitresult);
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, Hitresult.GetActor()->GetClass()->GetName());
 	if (ClickValue)
 	{
 		if (Hitresult.GetActor()->ActorHasTag("Switch_Board"))
@@ -182,7 +178,6 @@ bool AAPController::GetHit()
 		else if (Hitresult.GetActor()->ActorHasTag("Billet_Part_1"))
 		{
 			FName SaveTag = "Billet_Part_1";
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("True")));
 			Location = Hitresult.GetActor()->GetActorLocation();
 			Rotation = Hitresult.GetActor()->GetActorRotation();
 
@@ -195,7 +190,6 @@ bool AAPController::GetHit()
 		}
 		
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("ClickValuFail")));
 	return ClickValue;
 }
 
@@ -265,21 +259,18 @@ void AAPController::SaveId(int64 Id)
 
 void AAPController::CompareIdAndParentID(int64 ParentId)
 {
-	if (CheckNumber(ParentId))
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACustomActor::StaticClass(), FoundActors);
+	for (const auto& Array : FoundActors)
 	{
-		TArray<AActor*> FoundActors;
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACustomActor::StaticClass(), FoundActors);
-		for (const auto& Array : FoundActors)
+		ACustomActor* TempActor = Cast<ACustomActor>(Array);
+		if (TempActor)
 		{
-			ACustomActor* TempActor = Cast<ACustomActor>(Array);
-			if (TempActor)
+			if (ParentId == TempActor->GetParentID())
 			{
-				if (ParentId == TempActor->getID())
+				if (Setpos_P.IsBound())
 				{
-					if (Setpos_i.IsBound())
-					{
-						Setpos_i.Broadcast(ParentId);
-					}
+					Setpos_P.Broadcast(ParentId);
 				}
 			}
 		}
@@ -292,14 +283,11 @@ bool AAPController::CheckNumber(int64 Number)
 	{
 		return false;
 	}
-	else if (Number != 0)
+	else
 	{
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+	return true;
 }
 
 

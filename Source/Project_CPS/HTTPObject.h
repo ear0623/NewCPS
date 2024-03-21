@@ -262,7 +262,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void MyHttpCall();
 
-
+	bool CheckNull(int64 number);
 
 private:
 	FHttpModule* HttpModule;

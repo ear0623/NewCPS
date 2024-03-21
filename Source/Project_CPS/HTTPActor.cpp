@@ -10,7 +10,7 @@ AHTTPActor::AHTTPActor()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	DataObject = CreateDefaultSubobject<UHTTPObject>(TEXT("HTTPobject"));
+	//DataObject = CreateDefaultSubobject<UHTTPObject>(TEXT("HTTPobject"));
 }
 
 // Called when the game starts or when spawned
@@ -20,14 +20,14 @@ void AHTTPActor::BeginPlay()
 
 	
 
-	if (DataObject != nullptr)
+	/*if (DataObject != nullptr)
 	{
 		DataObject->GetHttpData().AddDynamic(this, &AHTTPActor::SetListVuew);
 	}
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, FString::Printf(TEXT("false")));
-	}
+	}*/
 
 }
 

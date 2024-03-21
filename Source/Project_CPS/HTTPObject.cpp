@@ -6,9 +6,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "USideSecondWidget.h"
 
-
-
-
 UHTTPObject::UHTTPObject()
 {
 	HttpModule = &FHttpModule::Get();
@@ -33,14 +30,11 @@ void UHTTPObject::ExcuteHttp(FString Get_SourceURL, FString Path_1, FString Path
 	if (Path == SourceURL)
 	{
 		APIENum = SettingAPI::Type01;
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, URL);
 	}
 	else
 	{
 		APIENum = SettingAPI::None;
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Emerald, URL);
 	}
-	//GEngine->AddOnScreenDebugMessage(-1,15.0f,FColor::Red ,URL);
 	//
 	TSharedPtr<IHttpRequest> HttpRequest = HttpModule->CreateRequest();
 	HttpRequest->OnRequestProgress().BindUObject(this, &UHTTPObject::HttpRequestProgressDelegate);
@@ -53,7 +47,7 @@ void UHTTPObject::ExcuteHttp(FString Get_SourceURL, FString Path_1, FString Path
 
 void UHTTPObject::MyHttpCall()
 {
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	TObjectPtr<APlayerController> PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (PlayerController)
 	{
 		AHUD* Hud = PlayerController->GetHUD();
@@ -64,12 +58,20 @@ void UHTTPObject::MyHttpCall()
 	}
 }
 
+bool UHTTPObject::CheckNull(int64 number)
+{
+	return 0;
+}
+
 void UHTTPObject::HttpRequestProgressDelegate(FHttpRequestPtr RequestPtr, int32 SendBytes, int32 RevBytes)
 {
 	int32 TotalSize = RequestPtr->GetResponse()->GetContentLength();
-	float Percent = (float)RevBytes /TotalSize;
+	float Percent = (float)RevBytes / TotalSize;
 	OnHttpConnectProcessCallback.Broadcast(RevBytes, TotalSize, Percent);
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red,FString::Printf(TEXT("ProgressDelegate")));
+	if (!RequestPtr.IsValid())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("NotValid")));
+	}
 }
 
 void UHTTPObject::HttpRequsetFinishedDelegate(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
@@ -89,11 +91,9 @@ void UHTTPObject::HttpRequsetFinishedDelegate(FHttpRequestPtr Request, FHttpResp
 	
 	if (APIENum == SettingAPI::Type01)
 	{
-
 		if (!FJsonSerializer::Deserialize(ObjectReader, JsonObjectCheck))
 		{
 			//pass
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("nosdf")));
 			return;
 		}
 	}
@@ -108,10 +108,9 @@ void UHTTPObject::HttpRequsetFinishedDelegate(FHttpRequestPtr Request, FHttpResp
 	TArray<TSharedPtr<FJsonValue>> TempArray;
 	if (APIENum == SettingAPI::Type01)
 	{
-		
 		//if (!JsonObjectCheck.IsValid()) // (JsonArray > 0)
 		TempArray = JsonObjectCheck->GetArrayField(TEXT("data"));
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("Array Length : %i"), TempArray.Num()));
+
 		// JsonArray 접근
 		for (int i = 0; i < TempArray.Num(); i++)
 		{
@@ -121,7 +120,6 @@ void UHTTPObject::HttpRequsetFinishedDelegate(FHttpRequestPtr Request, FHttpResp
 				ParseParent_Type01(TempArray[i]->AsObject(), CallbackStruct);
 			}
 		}
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("Callback Length : %i"), CallbackStruct.JsonData_Type01.Num()));
 		JSonCallBack_Type01.Broadcast(CallbackStruct);
 	}
 
@@ -131,7 +129,6 @@ void UHTTPObject::HttpRequsetFinishedDelegate(FHttpRequestPtr Request, FHttpResp
 
 		if (!JsonArray.IsEmpty()) // (JsonArray > 0)
 			CallbackStruct.JsonData.SetNum(JsonArray.Num());
-
 
 		// JsonArray 접근
 		for (int i = 0; i < JsonArray.Num(); i++)
@@ -153,17 +150,6 @@ void UHTTPObject::HttpRequsetFinishedDelegate(FHttpRequestPtr Request, FHttpResp
 		}
 		JSonCallBack.Broadcast(CallbackStruct);
 	}
-
-	
-	FString result; // 데이터를 저장할 변수
-	//int resultInt; // 데이터를 저장할 변수
-
-	// CallbackStruct 세팅
-	// Add 방식 대신 대입 방식 사용 시, 해당 과정 넣어주어야 에러 나지 않음
-	// ㄴ 예시 : CallbackStruct.FruitArray.Apple = result;
-	// Add 방식 사용 시, 해당 과정 넣어주지 말 것
-	// ㄴ 예시 : CallbackStruct.FruitArray.Add();
-	
 }
 
 void UHTTPObject::Tempsave()
@@ -186,7 +172,6 @@ void UHTTPObject::ParseParent(const TSharedPtr<FJsonObject>& JsonObject, FStruct
 
 	FJsonStruct Parents;
 
-
 	if (JsonObject->TryGetNumberField(TEXT("node_id"), resultInt))
 		Parents.node_id = resultInt;
 
@@ -196,10 +181,10 @@ void UHTTPObject::ParseParent(const TSharedPtr<FJsonObject>& JsonObject, FStruct
 	if (JsonObject->TryGetNumberField(TEXT("parent_id"), resultInt))
 		Parents.parent_id = resultInt;
 
-	if (JsonObject->TryGetStringField(TEXT("Type"), result))
+	if (JsonObject->TryGetStringField(TEXT("type"), result))
 		Parents.type = result;
 
-	TArray<TSharedPtr<FJsonValue>> ChildArray = JsonObject->GetArrayField(TEXT("Child"));
+	TArray<TSharedPtr<FJsonValue>> ChildArray = JsonObject->GetArrayField(TEXT("child"));
 	for (int i = 0; i < ChildArray.Num(); i++)
 	{
 		TSharedPtr<FJsonValue>& ChildValue = ChildArray[i];
@@ -212,7 +197,6 @@ void UHTTPObject::ParseParent(const TSharedPtr<FJsonObject>& JsonObject, FStruct
 			}
 		}
 	}
-
 	CallbackStruct.JsonData.Add(Parents);
 }
 
@@ -232,10 +216,12 @@ void UHTTPObject::ParseZeroChild(const TSharedPtr<FJsonObject>& JsonObject, FJso
 	if (JsonObject->TryGetNumberField(TEXT("parent_id"), resultInt))
 		FirstChild.parent_id = resultInt;
 
-	if (JsonObject->TryGetStringField(TEXT("Type"), result))
+	if (JsonObject->TryGetStringField(TEXT("type"), result))
 		FirstChild.type = result;
 
-	TArray<TSharedPtr<FJsonValue>> ChildArray = JsonObject->GetArrayField(TEXT("Child"));
+	TArray<TSharedPtr<FJsonValue>> ChildArray = JsonObject->GetArrayField(TEXT("child"));
+	if (ChildArray.IsEmpty())
+		return;
 	for (int i = 0; i < ChildArray.Num(); i++)
 	{
 		TSharedPtr<FJsonValue>& ChildValue = ChildArray[i];
@@ -268,10 +254,12 @@ void UHTTPObject::ParseFirstChild(const TSharedPtr<FJsonObject>& JsonObject, FJs
 	if (JsonObject->TryGetNumberField(TEXT("parent_id"), resultInt))
 		SeoncdChild.parent_id = resultInt;
 
-	if (JsonObject->TryGetStringField(TEXT("Type"), result))
+	if (JsonObject->TryGetStringField(TEXT("type"), result))
 		SeoncdChild.type = result;
 
-	TArray<TSharedPtr<FJsonValue>> ChildArray = JsonObject->GetArrayField(TEXT("Child"));
+	TArray<TSharedPtr<FJsonValue>> ChildArray = JsonObject->GetArrayField(TEXT("child"));
+	if (ChildArray.IsEmpty())
+		return;
 	for (int i = 0; i < ChildArray.Num(); i++)
 	{
 		TSharedPtr<FJsonValue>& ChildValue = ChildArray[i];
@@ -304,7 +292,7 @@ void UHTTPObject::ParseSecondChild(const TSharedPtr<FJsonObject>& JsonObject, FJ
 	if (JsonObject->TryGetNumberField(TEXT("parent_id"), resultInt))
 		ThridChild.parent_id = resultInt;
 
-	if (JsonObject->TryGetStringField(TEXT("Type"), result))
+	if (JsonObject->TryGetStringField(TEXT("type"), result))
 		ThridChild.type = result;
 
 	SecondChild.JsonThirdChildData.Add(ThridChild);

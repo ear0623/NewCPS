@@ -58,6 +58,7 @@ private:
 
 public:
 	int64 getID() {	return ID;}
+	int64 GetParentID() { return ParentID; }
 	TArray<FText> GetNameArray() { return Name_Array; }
 	FString GetIDName() { return IDName; }
 	TObjectPtr<UStaticMeshComponent> GetTargetMesh() { return TargetMesh; }

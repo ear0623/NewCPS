@@ -19,8 +19,6 @@ ACustomActor::ACustomActor()
 
 	TargetSkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Skeletalmesh"));
 	TargetSkeletalMesh->SetupAttachment(SCene);
-
-
 }
 
 // Called when the game starts or when spawned
@@ -32,6 +30,7 @@ void ACustomActor::BeginPlay()
 	if (APCController) 
 	{
 		APCController->Setpos.AddDynamic(this, &ACustomActor::SetLineOnOff);
+		APCController->Setpos_P.AddDynamic(this, &ACustomActor::SetLineOnOff_Child);
 	}
 }
 
@@ -50,12 +49,10 @@ void ACustomActor::SetLineOnOff(FName name)
 		if (TargetMesh->bRenderCustomDepth == true)
 		{
 			TargetMesh->SetRenderCustomDepth(false);
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("asd")));
 		}
 		else
 		{
 			TargetMesh->SetRenderCustomDepth(true);
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("false")));
 		}
 	}
 	else if (this->IDName == name && TargetSkeletalMesh != nullptr)
@@ -75,7 +72,6 @@ void ACustomActor::SetLineOnOff(FName name)
 		if (TargetMesh->bRenderCustomDepth == true&& TargetMesh != nullptr)
 		{
 			TargetMesh->SetRenderCustomDepth(false);
-			
 		}
 	}
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("SetLineOnOff %s"), TargetMesh->bRenderCustomDepth));
@@ -88,12 +84,10 @@ void ACustomActor::SetLineOnOff_Innumber(int64 Id)
 		if (TargetMesh->bRenderCustomDepth == true)
 		{
 			TargetMesh->SetRenderCustomDepth(false);
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("asd")));
 		}
 		else
 		{
 			TargetMesh->SetRenderCustomDepth(true);
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("false")));
 		}
 	}
 	else if(this->ID != Id)
@@ -101,32 +95,36 @@ void ACustomActor::SetLineOnOff_Innumber(int64 Id)
 		if (TargetMesh->bRenderCustomDepth == true && TargetMesh != nullptr)
 		{
 			TargetMesh->SetRenderCustomDepth(false);
-
 		}
 	}
 }
 
 void ACustomActor::SetLineOnOff_Child(int64 Id)
 {
-	if (this->ID == Id && TargetMesh != nullptr)
+	if (ParentID != 0)
 	{
-		if (TargetMesh->bRenderCustomDepth == true)
+		if (this->ParentID == Id && TargetMesh != nullptr)
 		{
-			TargetMesh->SetRenderCustomDepth(false);
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("asd")));
+			if (TargetMesh->bRenderCustomDepth == true)
+			{
+				TargetMesh->SetRenderCustomDepth(false);
+			}
+			else
+			{
+				if (this->ID == 1)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("Check")));
+				}
+				TargetMesh->SetRenderCustomDepth(true);
+			}
 		}
-		else
+		else if (this->ParentID != Id)
 		{
-			TargetMesh->SetRenderCustomDepth(true);
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::Printf(TEXT("false")));
-		}
-	}
-	else if (this->ID != Id)
-	{
-		if (TargetMesh->bRenderCustomDepth == true && TargetMesh != nullptr)
-		{
-			TargetMesh->SetRenderCustomDepth(false);
+			if (TargetMesh->bRenderCustomDepth == true && TargetMesh != nullptr)
+			{
+				TargetMesh->SetRenderCustomDepth(false);
 
+			}
 		}
 	}
 }
