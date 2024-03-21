@@ -30,6 +30,7 @@ private:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "HTTP", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UHTTPObject> DataObject;
 
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetListVuew(int64 Id, FString DataName, int64 DataValue, int64 VCID, FString VCName, int64 Type);
