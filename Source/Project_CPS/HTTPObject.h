@@ -273,22 +273,22 @@ private:
 
 	
 private:
-	UPROPERTY()
+	UPROPERTY(meta = (AllowPrivateAccess = "true"))
 	FString SourceURL;
 
-	UPROPERTY()
+	UPROPERTY(meta = (AllowPrivateAccess = "true"))
 	FString Path;
 
-	UPROPERTY()
+	UPROPERTY(meta = (AllowPrivateAccess = "true"))
 	FString Path2;
 
-	UPROPERTY()
+	UPROPERTY(meta = (AllowPrivateAccess = "true"))
 	FString Path3;
 
-	UPROPERTY()
+	UPROPERTY(meta = (AllowPrivateAccess = "true"))
 	FString Path4;
 
-	UPROPERTY()
+	UPROPERTY(meta = (AllowPrivateAccess = "true"))
 	FString Name;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = " Struct", meta = (AllowPrivateAccess = "true"))

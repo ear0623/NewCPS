@@ -69,7 +69,6 @@ void AAPController::InitSetting_Camera()
 		MyPlayer->GetSpringArm()->SetRelativeRotation(FRotator(0.0f, 00.0f, 0.0f));
 		MyPlayer->GetSubSpringArm()->SetRelativeRotation(FRotator(-50.0f, 0.0f, 0.0f));
 		//
-		
 		//
 		MyPlayer->GetSpringArm()->TargetArmLength = 300.0f;
 		GetWorldTimerManager().ClearTimer(TimerHandle);
@@ -88,7 +87,6 @@ void AAPController::InitSetting_Player_Pos()
 	FRotator TargetRotator = Rotation;
 	FRotator InterpRotator = FMath::RInterpTo(CurrentRotator, TargetRotator, DeltaTime, InterSpeed);
 	//test
-
 	////loop
 	MyPlayer->SetActorLocation(InterpVector);
 	//
@@ -106,9 +104,7 @@ void AAPController::InitSetting_Player_Pos()
 	{
 		InterSpeed = 1.0f;
 		MyPlayer->SetActorRotation(TargetRotator);
-		
 	}
-	
 }
 
 void AAPController::InitSetting_SprinArm()
@@ -126,7 +122,6 @@ void AAPController::InitSetting_SprinArm()
 		GetWorldTimerManager().ClearTimer(TimerHandle_Arm);
 	}
 }
-
 
 bool AAPController::GetHit()
 {
